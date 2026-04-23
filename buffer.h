@@ -1,6 +1,9 @@
 #ifndef T_BUFFER_H
 #define T_BUFFER_H
 
+#include <stdlib.h>
+#include <unistd.h>
+
 #define TIPO char
 #define TBUFFER buffer
 #define N 5
