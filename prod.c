@@ -13,7 +13,9 @@
 
 TIPO produce_item(FILE* arquivo)
 {
-    return (char) fgetc(arquivo);
+    char extraccion = (char) fgetc(arquivo);
+    printf("Producido %c\n", extraccion);
+    return extraccion;
 }
 
 void productor(FILE* arquivo, TBUFFER* buffer, int t)
@@ -38,7 +40,7 @@ void productor(FILE* arquivo, TBUFFER* buffer, int t)
 int main(int argc, char** argv)
 {
     // Comprobar que hai polo menos dous argumentos
-    if (argc < 3)
+    if (argc < 2)
     {
         printf("Uso: %s <nome de arquivo> <valor de T>\n", argv[0]);
         return EXIT_FAILURE;
