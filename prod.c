@@ -16,21 +16,11 @@ TIPO produce_item(FILE* arquivo)
     return (char) fgetc(arquivo);
 }
 
-void productor(FILE* arquivo, int t)
+void productor(FILE* arquivo, TBUFFER* buffer, int t)
 {
-    // Poñer os atributos da cola
-    struct mq_attr atribCola;
-    atribCola.mq_maxmsg = N;
-    atribCola.mq_msgsize = sizeof(char);
-    mq_unlink(NOM_MQ_PROD);
-    mq_unlink(NOM_MQ_CONS);
-
-    // Crear a cola
-    mqd_t almacenEntrada = mq_open(NOM_MQ_PROD, O_CREAT | O_WRONLY, 0777, &atribCola);
-    mqd_t almacenSaida = mq_open(NOM_MQ_CONS, O_CREAT | O_WRONLY, 0777, &atribCola);
-    if (almacenEntrada == -1 || almacenSaida == -1)
+    if (buffer->almacenEntrada == -1 || buffer->almacenSaida == -1)
     {
-        printf("Erro ao abir a cola de mesaxes: Entrada: %d - Saída %d\n", almacenEntrada, almacenSaida);
+        printf("Erro ao abir a cola de mesaxes: Entrada: %d - Saída %d\n", buffer->almacenEntrada, buffer->almacenSaida);
         return;
     }
 
@@ -39,13 +29,10 @@ void productor(FILE* arquivo, int t)
     {
         item = produce_item(arquivo);
         usleep(rand() % (t + 1));
-        mq_receive(almacenEntrada, NULL, sizeof(char), 0);
-        mq_send(almacenSaida, &item, sizeof(TIPO), 0);
+        mq_receive(buffer->almacenEntrada, NULL, sizeof(char), 0);
+        mq_send(buffer->almacenSaida, &item, sizeof(TIPO), 0);
         
     } while (item != EOF);
-
-    mq_close(almacenEntrada);
-    mq_close(almacenSaida);
 }
 
 int main(int argc, char** argv)
@@ -83,6 +70,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    inicializarBuffer(buffer);
+
     // Abrir o arquivo de procesamento para lectura normal
     FILE* arquivo = fopen(ARQUIVO_LECTURA, "r");
 
@@ -93,9 +82,11 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
     
-    productor(arquivo, T);
+    productor(arquivo, buffer, T);
 
     // Dealocar os recursos
+    librarBuffer(buffer);
+
      if(close(idArquivoCompartido) == -1) 
         perror("Erro ao pechar o arquivo de lectura\n");
 
