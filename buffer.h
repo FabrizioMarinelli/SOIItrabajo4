@@ -8,6 +8,8 @@
 #define NOM_ARQUIVO "/tmp/prod-con.tmp"
 #define NOM_MQ_PROD "/ALMACENPROD"
 #define NOM_MQ_CONS "/ALMACENCONS"
+#include <stdlib.h>
+#include <unistd.h>
 
 // Enumeración de conveniencia para os estados do semáforo, para a espera activa
 enum estadoBuffer { BALDERIO, CHEO, INTERMEDIO };
