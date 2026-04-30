@@ -1,14 +1,17 @@
 #ifndef T_BUFFER_H
 #define T_BUFFER_H
 
+#include <fcntl.h>
 #define TIPO char
 #define TBUFFER buffer
 #define N 5
 #define NUM_ITERACIONS 80
-#define NOM_ARQUIVO "/tmp/prod-con.tmp"
+#define NOM_ARQUIVO "./prod-con.tmp"
 #define NOM_MQ_PROD "/ALMACENPROD"
 #define NOM_MQ_CONS "/ALMACENCONS"
+#include <mqueue.h>
 #include <stdlib.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 // Enumeración de conveniencia para os estados do semáforo, para a espera activa
@@ -29,18 +32,18 @@ void inicializarBuffer(TBUFFER *b) {
   b->tam = 0;
 
   // Poñer os atributos da cola
-    struct mq_attr atribCola;
-    atribCola.mq_maxmsg = N;
-    atribCola.mq_msgsize = sizeof(char);
-    mq_unlink(NOM_MQ_PROD);
-    mq_unlink(NOM_MQ_CONS);
+  struct mq_attr atribCola;
+  atribCola.mq_maxmsg = N;
+  atribCola.mq_msgsize = sizeof(char);
+  mq_unlink(NOM_MQ_PROD);
+  mq_unlink(NOM_MQ_CONS);
 
-    // Crear a cola
-    b->almacenEntrada = mq_open(NOM_MQ_PROD, O_CREAT | O_WRONLY, 0777, &atribCola);
-    b->almacenSaida = mq_open(NOM_MQ_CONS, O_CREAT | O_WRONLY, 0777, &atribCola);
+  // Crear a cola
+  b->almacenEntrada = mq_open(NOM_MQ_PROD, O_CREAT | O_RDWR, 0777, &atribCola);
+  b->almacenSaida = mq_open(NOM_MQ_CONS, O_CREAT | O_RDWR, 0777, &atribCola);
 }
 
-void librarBuffer (TBUFFER *b) {
+void librarBuffer(TBUFFER *b) {
   mq_close(b->almacenEntrada);
   mq_close(b->almacenSaida);
   mq_unlink(NOM_MQ_PROD);
