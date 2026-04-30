@@ -36,8 +36,8 @@ void inicializarBuffer(TBUFFER *b) {
     mq_unlink(NOM_MQ_CONS);
 
     // Crear a cola
-    mqd_t almacenEntrada = mq_open(NOM_MQ_PROD, O_CREAT | O_WRONLY, 0777, &atribCola);
-    mqd_t almacenSaida = mq_open(NOM_MQ_CONS, O_CREAT | O_WRONLY, 0777, &atribCola);
+    b->almacenEntrada = mq_open(NOM_MQ_PROD, O_CREAT | O_WRONLY, 0777, &atribCola);
+    b->almacenSaida = mq_open(NOM_MQ_CONS, O_CREAT | O_WRONLY, 0777, &atribCola);
 }
 
 void librarBuffer (TBUFFER *b) {
